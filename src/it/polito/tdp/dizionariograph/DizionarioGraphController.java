@@ -1,12 +1,14 @@
 package it.polito.tdp.dizionariograph;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.dizionariograph.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class DizionarioGraphController {
@@ -14,6 +16,10 @@ public class DizionarioGraphController {
 	Model model = new Model();
 	
 	public void setModel(Model model) {
+		btnGradoMax.setDisable(true);
+	    btnTrovaVicini.setDisable(true);
+	    txtCercare.setDisable(true);
+		
 		this.model=model;
 	}
 
@@ -37,27 +43,64 @@ public class DizionarioGraphController {
 
     @FXML
     private Button btnGradoMax;
+    
+    @FXML
+    private TextArea txtResult;
 
     @FXML
     private Button btnReset;
 
     @FXML
     void doGradoMax(ActionEvent event) {
-
+    	
+    	int maxDegree=model.findMaxDegree();
+    	
+    	txtResult.appendText("Grado massimo del grafo = "+maxDegree);
     }
 
     @FXML
     void doGrafo(ActionEvent event) {
+    	
+    	try {
+        	
+    	    model.createGraph( Integer.parseInt(txtLettere.getText()));
+    	    
+    	    
+    	    btnGradoMax.setDisable(false);
+    	    btnTrovaVicini.setDisable(false);
+    	    txtCercare.setDisable(false);
+    	    
+    	    }catch(NumberFormatException e) {
+    	    	txtResult.appendText("Inserire un valore corretto!");
+    	    }
 
     }
 
     @FXML
     void doReset(ActionEvent event) {
+    	
+    	btnGradoMax.setDisable(true);
+	    btnTrovaVicini.setDisable(true);
+	    txtCercare.setDisable(true);
+	    
+	    txtResult.clear();
+    	txtLettere.clear();
+    	txtCercare.clear();
 
     }
 
     @FXML
     void doTrovaVicini(ActionEvent event) {
+    	
+    	txtResult.clear();
+
+    	List<String> vicini = model.displayNeighbours(txtCercare.getText());
+    	
+    	if (vicini.isEmpty()) 
+    		txtResult.appendText("Nessun risultato trovato!");
+    	
+    	for(String s : vicini) txtResult.appendText(s+"\n");
+    	    txtResult.appendText("Grado del nodo : "+vicini.size()+"\n");
 
     }
 
@@ -68,6 +111,7 @@ public class DizionarioGraphController {
         assert btnGeneraGrafo != null : "fx:id=\"btnGeneraGrafo\" was not injected: check your FXML file 'DizionarioGraph.fxml'.";
         assert btnTrovaVicini != null : "fx:id=\"btnTrovaVicini\" was not injected: check your FXML file 'DizionarioGraph.fxml'.";
         assert btnGradoMax != null : "fx:id=\"btnGradoMax\" was not injected: check your FXML file 'DizionarioGraph.fxml'.";
+        assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'DizionarioGraph.fxml'.";
         assert btnReset != null : "fx:id=\"btnReset\" was not injected: check your FXML file 'DizionarioGraph.fxml'.";
 
     }
